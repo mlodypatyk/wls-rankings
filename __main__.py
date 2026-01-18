@@ -76,8 +76,21 @@ def get_competition_kinch(comp_id: str):
                 smallest_kinch = kinch_table[event][smallest_kinch_person]
             else:
                 smallest_kinch = 0
+            next_rounds_persons = []
+            if pos != len(per_round_kinch) - 1:
+                next_rounds_persons = [person for _, person in per_round_kinch[pos+1]]
+            first_person_proceed = False
+            first_person_proceed_kinch = None
             for kinch, person_id in round_kinch:
                 kinch_table[event][person_id] = smallest_kinch + (1-smallest_kinch) * kinch
+                if person_id in next_rounds_persons and not first_person_proceed:
+                    first_person_proceed = True
+                    first_person_proceed_kinch = smallest_kinch + (1-smallest_kinch) * kinch
+                if person_id not in next_rounds_persons and first_person_proceed:
+                    # people who quit
+                    print(f'Quit {person_id}, {event}')
+                    kinch_table[event][person_id] = first_person_proceed_kinch
+
 
         # Normalize the kinch
         #max_kinch = max(kinch_table[event].values())
@@ -102,7 +115,13 @@ def get_competition_kinch(comp_id: str):
         sum_kinch = round(sum(kinches) / len(kinches))
         final_kinch.append((sum_kinch, person_id, kinches))
     final_kinch.sort(reverse=True)
-    return (people, events_held, final_kinch)
+    kinch_readable = []
+    for sum_kinch, person_id, kinches in final_kinch:
+        person_link = f'[{people[person_id]}](https://worldcubeassociation.org/persons/{person_id})'
+        headers = [person_link, sum_kinch] + kinches
+        kinch_readable.append(headers)
+
+    return (people, events_held, kinch_readable)
         
 
 def get_series_kinch(series_ids):
@@ -139,11 +158,19 @@ def get_series_kinch(series_ids):
 
 if __name__ == '__main__':
     
+    _, events, kinch = get_competition_kinch('PolishChampionship2022')    
+    headers = ["Person", "Kinch"] + events
+    table = create_markdown_table(headers, kinch)
+    with open('test.md', 'w', encoding='utf-8') as file:
+        file.write('# Rankings\n\n')
+        file.write(table)
+
+    '''
     comps, kinch = get_series_kinch(series_ids)
     headers = ["Person", "Kinch"] + comps
     table = create_markdown_table(headers, kinch)
     with open('test.md', 'w', encoding='utf-8') as file:
         file.write('# Rankings\n\n')
         file.write(table)
-    
+    '''
 
