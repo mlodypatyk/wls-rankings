@@ -7,7 +7,7 @@ API_URL = 'https://www.worldcubeassociation.org/api/v0/competitions/'
 AVERAGE_FORMATS = ['a', 'm']
 KINCH_CONSTANT = 10000
 
-series_ids = ['BrizZonSideOpen2025', 'BrizZonSideOpenII2025', 'BrizZonSideOpenIII2025', 'BrizZonSideOpenIV2025', 'BrizZonSideOpenV2025', 'BrizzonSylwesterOpen2025']
+series_ids = ['OlsztynOpen2023', 'OstrodaOpen2024', 'OlsztynSquared2024', 'OlsztynOpen2024', 'BigSideBlindOlsztyn2025', 'OlsztynOpen2025', 'OlsztyNxN2026']
 
 def create_markdown_table(headers, data):
     final_text = ''
@@ -121,16 +121,16 @@ def get_competition_kinch(comp_id: str):
         headers = [person_link, sum_kinch] + kinches
         kinch_readable.append(headers)
 
-    return (people, events_held, kinch_readable)
+    return (people, events_held, kinch_readable, final_kinch)
         
 
-def get_series_kinch(series_ids):
+def get_series_kinch(series_ids, eligible_ids = None):
     total_kinch = defaultdict(dict)
     all_people = {}
     for competition_id in series_ids:
-        people, _, comp_kinch = get_competition_kinch(competition_id)
+        people, _, _, comp_kinch = get_competition_kinch(competition_id)
         all_people.update(people)
-        for kinch, person_id, _ in comp_kinch:
+        for kinch, person_id, *_ in comp_kinch:
             total_kinch[person_id][competition_id] = kinch
     for person in all_people:
         for competition_id in series_ids:
@@ -149,6 +149,9 @@ def get_series_kinch(series_ids):
     for kinch, person, events in people_kinch_list:
         person_link = f'[{all_people[person]}](https://worldcubeassociation.org/persons/{person})'
         row = [person_link, kinch] + events
+        if eligible_ids:
+            if person not in eligible_ids:
+                continue
         readable_list.append(row)
     return (series_ids, readable_list)
 
@@ -157,20 +160,22 @@ def get_series_kinch(series_ids):
 
 
 if __name__ == '__main__':
-    
-    _, events, kinch = get_competition_kinch('PolishChampionship2022')    
-    headers = ["Person", "Kinch"] + events
+    '''
+    _, events, _, kinch = get_competition_kinch('OlsztyNxN2026')
+    names = [event_names[event] for event in events]
+    headers = ["Person", "Kinch"] + names
     table = create_markdown_table(headers, kinch)
     with open('test.md', 'w', encoding='utf-8') as file:
         file.write('# Rankings\n\n')
         file.write(table)
-
     '''
-    comps, kinch = get_series_kinch(series_ids)
+
+    
+    comps, kinch = get_series_kinch(series_ids, eligible_ids=['2013OLSZ02', '2013ROGA02', '2022BOLE01'])
     headers = ["Person", "Kinch"] + comps
     table = create_markdown_table(headers, kinch)
     with open('test.md', 'w', encoding='utf-8') as file:
         file.write('# Rankings\n\n')
         file.write(table)
-    '''
+    
 
