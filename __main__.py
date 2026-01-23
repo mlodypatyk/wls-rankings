@@ -4,10 +4,10 @@ from collections import defaultdict
 from rounds import round_weights
 
 API_URL = 'https://www.worldcubeassociation.org/api/v0/competitions/'
+CSV_URL = 'https://drive.google.com/uc?id=1uQLMSjPEovDWOgdCUAc9lQttcmVVXkUo'
 AVERAGE_FORMATS = ['a', 'm']
 KINCH_CONSTANT = 10000
 
-series_ids = ['OlsztynOpen2023', 'OstrodaOpen2024', 'OlsztynSquared2024', 'OlsztynOpen2024', 'BigSideBlindOlsztyn2025', 'OlsztynOpen2025', 'OlsztyNxN2026']
 
 def create_markdown_table(headers, data):
     final_text = ''
@@ -156,22 +156,23 @@ def get_series_kinch(series_ids, eligible_ids = None):
     return (series_ids, readable_list)
 
 
-
+def get_ids_from_url(url):
+    r = requests.get(url)
+    ids_with_empty = r.text.split('\n')
+    ids_final = [id for id in ids_with_empty if id]
+    return ids_final
+    
 
 
 if __name__ == '__main__':
-    '''
-    _, events, _, kinch = get_competition_kinch('OlsztyNxN2026')
-    names = [event_names[event] for event in events]
-    headers = ["Person", "Kinch"] + names
-    table = create_markdown_table(headers, kinch)
-    with open('test.md', 'w', encoding='utf-8') as file:
-        file.write('# Rankings\n\n')
-        file.write(table)
-    '''
 
+    series_ids = ['WLSStyczen2026']
+
+    wls_ids = get_ids_from_url(CSV_URL)
+
+    print(wls_ids)
     
-    comps, kinch = get_series_kinch(series_ids, eligible_ids=['2013OLSZ02', '2013ROGA02', '2022BOLE01'])
+    comps, kinch = get_series_kinch(series_ids, eligible_ids=wls_ids)
     headers = ["Person", "Kinch"] + comps
     table = create_markdown_table(headers, kinch)
     with open('test.md', 'w', encoding='utf-8') as file:
