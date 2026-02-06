@@ -155,13 +155,15 @@ def get_series_kinch(series_ids, eligible_ids = None):
     people_kinch_list.sort(reverse=True)
 
     readable_list = []
+    pos = 0
     for kinch, person, events in people_kinch_list:
         person_link = f'[{all_people[person]}](https://worldcubeassociation.org/persons/{person})'
-        row = [person_link, kinch] + events
+        row = [str(pos+1), person_link, kinch] + events
         if eligible_ids:
             if person not in eligible_ids:
                 continue
         readable_list.append(row)
+        pos+=1
     return (series_ids_with_results, readable_list)
 
 
@@ -182,7 +184,7 @@ if __name__ == '__main__':
     print(wls_ids)
 
     comps, kinch = get_series_kinch(series_ids, eligible_ids=wls_ids)
-    headers = ["Person", "Kinch"] + comps
+    headers = ["Pozycja/Position", "Osoba/Person", "Points/Punkty"] + comps
     table = create_markdown_table(headers, kinch)
     with open('test.md', 'w', encoding='utf-8') as file:
         file.write('# Rankings\n\n')
