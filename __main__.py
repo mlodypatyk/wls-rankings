@@ -2,6 +2,7 @@ from events import event_names, event_order
 import requests
 from collections import defaultdict
 from rounds import round_weights
+from uploader import update_tabs
 
 API_URL = 'https://www.worldcubeassociation.org/api/v0/competitions/'
 CSV_URL = 'https://drive.google.com/uc?id=1uQLMSjPEovDWOgdCUAc9lQttcmVVXkUo'
@@ -186,8 +187,8 @@ if __name__ == '__main__':
     comps, kinch = get_series_kinch(series_ids, eligible_ids=wls_ids)
     headers = ["Pozycja/Position", "Osoba/Person", "Points/Punkty"] + comps
     table = create_markdown_table(headers, kinch)
-    with open('test.md', 'w', encoding='utf-8') as file:
+    with open('output.md', 'w', encoding='utf-8') as file:
         file.write('# Rankings\n\n')
         file.write(table)
-    
+    update_tabs()
 
