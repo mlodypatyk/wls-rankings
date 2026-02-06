@@ -1,5 +1,6 @@
 from events import event_names, event_order
 import requests
+import time
 from collections import defaultdict
 from rounds import round_weights
 from uploader import update_tabs
@@ -190,5 +191,6 @@ if __name__ == '__main__':
     with open('output.md', 'w', encoding='utf-8') as file:
         file.write('# Rankings\n\n')
         file.write(table)
+        file.write(f'\nOstatnia aktualizacja/Last update: {time.strftime('%X %d-%m-%Y')}')
     update_tabs()
 
