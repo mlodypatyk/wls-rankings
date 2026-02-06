@@ -31,6 +31,9 @@ def get_competition_kinch(comp_id: str):
     url = API_URL + comp_id + '/results'
     results = requests.get(url).json()
 
+    if results == []:
+        return None
+
     people = {}
     for result in results:
         people[result['wca_id']] = result['name']
@@ -127,20 +130,26 @@ def get_competition_kinch(comp_id: str):
 def get_series_kinch(series_ids, eligible_ids = None):
     total_kinch = defaultdict(dict)
     all_people = {}
+    series_ids_with_results = []
     for competition_id in series_ids:
-        people, _, _, comp_kinch = get_competition_kinch(competition_id)
+        comp_results = get_competition_kinch(competition_id)
+        if comp_results is None:
+            continue
+        else:
+            series_ids_with_results.append(competition_id)
+        people, _, _, comp_kinch = comp_results
         all_people.update(people)
         for kinch, person_id, *_ in comp_kinch:
             total_kinch[person_id][competition_id] = kinch
     for person in all_people:
-        for competition_id in series_ids:
+        for competition_id in series_ids_with_results:
             if competition_id not in total_kinch[person]:
                 total_kinch[person][competition_id] = 0
     
     people_kinch_list = []
     for person in total_kinch:
         person_kinches = []
-        for competition_id in series_ids:
+        for competition_id in series_ids_with_results:
             person_kinches.append(total_kinch[person][competition_id])
         people_kinch_list.append((sum(person_kinches), person, person_kinches))
     people_kinch_list.sort(reverse=True)
@@ -153,7 +162,7 @@ def get_series_kinch(series_ids, eligible_ids = None):
             if person not in eligible_ids:
                 continue
         readable_list.append(row)
-    return (series_ids, readable_list)
+    return (series_ids_with_results, readable_list)
 
 
 def get_ids_from_url(url):
@@ -166,12 +175,12 @@ def get_ids_from_url(url):
 
 if __name__ == '__main__':
 
-    series_ids = ['WLSStyczen2026']
+    series_ids = ['WLSStyczen2026', 'WLSLuty2026', 'WLSMarzec2026', 'WLSKwiecien2026', 'WLSMaj2026']
 
     wls_ids = get_ids_from_url(CSV_URL)
 
     print(wls_ids)
-    
+
     comps, kinch = get_series_kinch(series_ids, eligible_ids=wls_ids)
     headers = ["Person", "Kinch"] + comps
     table = create_markdown_table(headers, kinch)
