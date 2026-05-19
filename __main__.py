@@ -179,7 +179,7 @@ def get_ids_from_url(url):
 
 if __name__ == '__main__':
 
-    series_ids = ['WLSStyczen2026', 'WLSLuty2026', 'WLSMarzec2026', 'WLSKwiecien2026', 'WLSMaj2026']
+    series_ids = ['WLSStyczen2026', 'WLSLuty2026', 'WLSMarzec2026', 'WLSKwiecien2026', 'WLSMaj2026', 'WLSCzerwiec2026']
 
     wls_ids = get_ids_from_url(CSV_URL)
 
