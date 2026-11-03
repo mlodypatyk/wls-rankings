@@ -59,7 +59,7 @@ def update_tabs():
     else:
         print('fail')
 
-    competitions = ['WLSStyczen2026', 'WLSLuty2026', 'WLSMarzec2026', 'WLSKwiecien2026', 'WLSMaj2026', 'WLSCzerwiec2026']
+    competitions = ['WLSStyczen2026', 'WLSLuty2026', 'WLSMarzec2026', 'WLSKwiecien2026', 'WLSMaj2026', 'WLSCzerwiec2026','WLSListopad2026', 'WLSListopadII2026', 'WLSGrudzien2026', 'WLSGrudzienII2026']
     WLS_TAB_NAME = 'WLS Klasyfikacja'
 
     new_tab_content = ""
